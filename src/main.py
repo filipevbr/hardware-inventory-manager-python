@@ -94,7 +94,7 @@ def search_component(inventory):
     if found_items:
         print(f"\nForam encontrados {len(found_items)} itens:")
         for item in found_items:
-            print(f"- {item['name']} | Valor: R${item['sale']:.2f}")
+            print(f"- {item['name']} | Venda: R${item['sale']:.2f}")
     else:
         print("Nenhum item foi encontrado.")
 
