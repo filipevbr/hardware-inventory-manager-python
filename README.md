@@ -33,7 +33,7 @@ O projeto conta com o ciclo completo de CRUD (Create, Read, Update, Delete), sis
 1.  Certifique-se de ter o **Python 3.10** (ou superior) instalado.
 2.  Clone este repositório:
     ```bash
-    git clone [https://github.com/filipevbr/hardware-inventory-manager-python.git](https://github.com/filipevbr/hardware-inventory-manager-python.git)
+    git clone https://github.com/filipevbr/hardware-inventory-manager-python.git
     ```
 3.  Navegue até o diretório do projeto:
     ```bash
