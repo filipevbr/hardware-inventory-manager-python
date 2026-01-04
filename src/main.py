@@ -1,6 +1,11 @@
 import datetime
 import json
 import csv
+from tabulate import tabulate
+from colorama import init, Fore, Style
+
+# Inicializa o colorama e reseta a cor apos o print
+init(autoreset=True)
 
 # Taxa para o calculo do preco final
 fixed_profit = 0.3
@@ -16,14 +21,14 @@ def load_data():
         with open("inventory.json", "r", encoding="utf-8") as data:
             return json.load(data)
     except json.JSONDecodeError:
-        print('ERRO: Não foi possível ler o arquivo.')
+        print(Fore.RED + 'ERRO: Não foi possível ler o arquivo.')
         return []
     except FileNotFoundError:
         return []
     
 # Funcao que exibe o menu principal
 def show_menu():
-    print("=== MENU PRINCIPAL ===")
+    print("\n" + Fore.CYAN + Style.BRIGHT + "=== HARDWARE MANAGER SYSTEM ===")
     print("1 - Adicionar Itens")
     print("2 - Ver Estoque")
     print("3 - Atualizar Itens")
@@ -41,24 +46,28 @@ def get_valid_float(prompt):
         try:
             value = float(data)
             if value < 0:
-                print("O valor não pode ser negativo.")
+                print(Fore.RED + "O valor não pode ser negativo.")
                 continue  # Volta para o inicio do loop
             return value
         
         except ValueError:
-            print("\nERRO: Digite apenas números válidos.")
+            print(Fore.RED + "\nERRO: Digite apenas números válidos.")
 
 # Funcao que verifica se a peca cadastrada existe
 def select_item(inventory):
     if not inventory:
-        print("Estoque vazio.")
+        print(Fore.YELLOW + "Estoque vazio.")
         return None
     
-    print("\n=== Selecione um Item ===")
+    print(Fore.CYAN + "\n=== Selecione um Item ===")
+    table_data = []
     for index, item in enumerate(inventory, start=1):
-        print(f"{index} - {item['name']}")
+        table_data.append([index, item['name'], f"R$ {item['sale']:.2f}"])
 
-    print("0 - Cancelar")  # Opcao de saida para o usuario
+    headers = ["ID", "Nome", "Venda"]
+    print(tabulate(table_data, headers=headers, tablefmt="fancy_grid"))
+
+    print(" 0 - Cancelar\n")  # Opcao de saida para o usuario
     
     try:
         option = int(input("Opção: "))
@@ -70,22 +79,22 @@ def select_item(inventory):
         if 0 <= real_index < len(inventory):
             return real_index
         else:
-            print("Opção inválida.")
+            print(Fore.RED + "Opção inválida.")
             return None
         
     except ValueError:
-        print("Por favor, digite apenas números inteiros.")
+        print(Fore.RED + "Por favor, digite apenas números inteiros.")
         return None
         
 # Funcao para notificar a necessidade de aprovacao da gerencia
 def manager_approval():
-    print("ATENÇÃO: Valor alto! Necessária a aprovação da gerencia.")
+    print(Fore.YELLOW + Style.BRIGHT + "ATENÇÃO: Valor alto! Necessária a aprovação da gerencia.")
 
 # Funcao para procurar pecas
 def search_component(inventory):
     print("\n=== BUSCAR ITEM ===")
     if not inventory:
-        print("Estoque vazio.")
+        print(Fore.YELLOW + "Estoque vazio.")
         return
     
     term = input("Digite o nome do item (ou parte dele): ").strip().upper()
@@ -93,10 +102,11 @@ def search_component(inventory):
 
     if found_items:
         print(f"\nForam encontrados {len(found_items)} itens:")
-        for item in found_items:
-            print(f"- {item['name']} | Venda: R${item['sale']:.2f}")
+        headers = ["Nome", "Venda"]
+        table_data = [[item['name'], f"R$ {item['sale']:.2f}"] for item in found_items]
+        print(tabulate(table_data, headers=headers, tablefmt="fancy_grid"))
     else:
-        print("Nenhum item foi encontrado.")
+        print(Fore.YELLOW + "Nenhum item foi encontrado.")
 
     input("\nPressione Enter para voltar ao menu...")
 
@@ -104,7 +114,7 @@ def search_component(inventory):
 def export_report(inventory):
     print("\n=== EXPORTAR RELATÓRIO (CSV) ===")
     if not inventory:
-        print("Estoque vazio. Nada para exportar.")
+        print(Fore.YELLOW + "Estoque vazio. Nada para exportar.")
         return
     
     filename = "relatorio_estoque.csv"
@@ -119,10 +129,10 @@ def export_report(inventory):
             writer.writeheader()  # Escreve o cabecalho da tabela.
             writer.writerows(inventory)  # Escreve todas as linhas da lista de uma unica vez.
         
-        print(f"Sucesso! O arquivo '{filename}' foi gerado na pasta.")
+        print(Fore.GREEN + f"Sucesso! O arquivo '{filename}' foi gerado na pasta.")
     
     except Exception as e:
-        print(f"Erro ao exportar: {e}")
+        print(Fore.RED + f"Erro ao exportar: {e}")
     
     input("\nPressione Enter para voltar ao menu...")
 
@@ -151,7 +161,7 @@ def add_component(inventory):
         save_data(inventory)
         
         # Feedback visual
-        print(f"\n{name} cadastrado! Venda: R${final_value:.2f}")
+        print(Fore.GREEN + f"\n{name} cadastrado! Venda: R${final_value:.2f}")
 
         if final_value >= 500.00:
             manager_approval()
@@ -167,7 +177,7 @@ def add_component(inventory):
 
 # Funcao para atualizar pecas
 def update_component(inventory):
-    print("\n=== ATUALIZAR ITEM ===")
+    print("\n" + Fore.CYAN + "\n=== ATUALIZAR ITEM ===")
     real_index = select_item(inventory)
 
     if real_index is None:
@@ -176,7 +186,11 @@ def update_component(inventory):
     item = inventory[real_index]
 
     while True:
-        print(f"\nEditando: {item['name']}")
+        print("\n" + Fore.CYAN + f"\nEditando: {item['name']}")
+
+        current_data = [[f"R$ {item['cost']:.2f}", f"R$ {item['sale']:.2f}"]]
+        print(tabulate(current_data, headers=["Custo Atual", "Venda Atual"], tablefmt="fancy_grid"))
+
         print("1 - Alterar Nome")
         print("2 - Alterar Custo")
         print("3 - Voltar/Salvar")
@@ -188,14 +202,14 @@ def update_component(inventory):
             if new_name: # Só altera se digitar algo
                 item['name'] = new_name
                 save_data(inventory)
-                print("Nome do item atualizado!")
+                print(Fore.GREEN + "Nome do item atualizado!")
 
         elif option == "2":
             new_cost = get_valid_float(f"(Atual: {item['cost']:.2f}) Novo custo: ")
             item['cost'] = new_cost  # Atualiza o custo
             item['sale'] = new_cost * (1 + fixed_profit)  # Atualiza o preco da venda
             save_data(inventory)
-            print(f"Custo e Venda atualizados! Nova venda: R${item['sale']:.2f}")
+            print(Fore.GREEN + f"Custo e Venda atualizados! Nova venda: R${item['sale']:.2f}")
             if new_cost >= 500.00:
                 manager_approval()
         
@@ -203,39 +217,45 @@ def update_component(inventory):
             break
 
         else:
-            print("Opção inválida.")
+            print(Fore.RED + "Opção inválida.")
 
 # Funcao para listar pecas no estoque
 def list_inventory(inventory):
-    print("\n=== ESTOQUE ATUAL ===")
+    print("\n" + Fore.CYAN + "=== ESTOQUE ATUAL ===")
     if not inventory:
-        print("Estoque vazio.")
+        print(Fore.YELLOW + "Estoque vazio.")
         input("\nPressione Enter para voltar ao menu...")
         return
     
+    table_data = []
     for index, item in enumerate(inventory, start=1):  # Percorre a lista de estoque enumerando o indice
-        print(f"{index} - Peça: {item['name']} | Custo: R${item['cost']:.2f} | Venda: R${item['sale']:.2f} - Data: {item['registration_date']}")
+        row = [index, item['name'], f"R$ {item['cost']:.2f}", f"R$ {item['sale']:.2f}", item['registration_date']]
+        table_data.append(row)
+
+    headers = ["ID", "Produto", "Custo", "Venda", "Data"]
+
+    print(tabulate(table_data, headers=headers, tablefmt="fancy_grid"))  # Imprime a tabela formatada
 
     input("\nPressione Enter para voltar ao menu...")
 
 # Funcao para remover pecas do estoque
 def remove_component(inventory):
-    print("\n=== REMOVER ITEM ===")
+    print("\n" + Fore.CYAN + "\n=== REMOVER ITEM ===")
     real_index = select_item(inventory)
 
     if real_index is None:
         return
     
     item_name = inventory[real_index]['name']
-    confirm = input(f"Tem certeza que deseja remover '{item_name}'? (S/N): ").strip().upper()
+    confirm = input(Fore.RED + f"Tem certeza que deseja remover '{item_name}'? (S/N): ").strip().upper()
 
     if confirm == 'S':
         inventory.pop(real_index)
         save_data(inventory)
-        print(f"Item '{item_name}' removido com sucesso!")
+        print(Fore.GREEN + f"Item '{item_name}' removido com sucesso!")
     
     else:
-        print("Operação cancelada.")
+        print(Fore.YELLOW + "Operação cancelada.")
     
     input("\nPressione Enter para voltar ao menu...")
 
@@ -259,10 +279,10 @@ def main():
             case "6":
                 export_report(inventory)
             case "7":
-                print("Saindo do sistema...")
+                print(Fore.CYAN + "Saindo do sistema...")
                 break
             case _:
-                print("Opção inválida.\n")
+                print(Fore.RED + "Opção inválida.\n")
 
 if __name__ == "__main__":
     main()

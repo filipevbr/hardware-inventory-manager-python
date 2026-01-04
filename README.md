@@ -1,50 +1,55 @@
-# 🛠️ CLI Hardware Inventory Manager
+# 🛠️ Hardware Inventory Manager
 
 **Um software de console em Python para gerenciar estoque de peças de manutenção.**
 
 ---
 
 ## 🚧 STATUS DO PROJETO
-**✅ Estável (v2.0)**
+**✅ Estável (v2.1)**
 
 O projeto conta com o ciclo completo de CRUD (Create, Read, Update, Delete), sistema de busca avançada e geração de relatórios para planilhas.
-> **Destaque v2.0:** Agora com **Busca de Itens**, **Exportação para Excel (CSV)** e persistência automática de dados.
+> **Novidade v2.1:** Interface visual aprimorada com **tabelas formatadas** e **alertas coloridos** para melhor UX no terminal.
 
 ---
 
 ## ⚙️ Funcionalidades
 
-### Funcionalidades Implementadas
-* [X] **Menu Principal:** Interface de console limpa e navegável.
-* [X] **Persistência de Dados:** Salva automaticamente em `inventory.json`.
-* [X] **Input Validation:** Blinda o sistema contra erros de digitação (aceita `10,50` ou `10.50`).
-* [X] **Comando `ADD`:** Cadastro de componentes com data/hora e cálculo de margem (30%).
-* [X] **Alerta Gerencial:** Notifica quando o preço de venda ultrapassa R$ 500,00.
-* [X] **Comando `LIST`:** Visualização tabular das peças.
-* [X] **Comando `UPDATE`:** Edição de Nome e Custo (com recálculo automático do preço de venda).
-* [X] **Comando `DELETE`:** Remoção segura de itens.
-* [X] **Comando `SEARCH`:** Busca dinâmica de peças por nome ou trecho.
-* [X] **Comando `EXPORT`:** Gera relatório em `.csv` compatível com Excel/Google Sheets.
+### Core
+* [X] **CRUD Completo:** Adicionar, Ler, Atualizar e Remover itens.
+* [X] **Persistência Automática:** Salva dados em `inventory.json` instantaneamente.
+* [X] **Lógica de Negócio:** Cálculo automático de preço de venda (Margem de 30%).
+* [X] **Proteção de Dados:** Validação de inputs numéricos (blinda contra erros de digitação).
 
+### Recursos Avançados
+* [X] **Busca Inteligente:** Localiza peças por nome ou trecho.
+* [X] **Exportação CSV:** Gera planilhas compatíveis com Excel/Google Sheets.
+* [X] **Visual Pro:** Tabelas alinhadas (`tabulate`) e feedback colorido (`colorama`).
+* [X] **Alerta Gerencial:** Notifica visualmente vendas de alto valor (> R$ 500).
 ---
 
 ## 💻 Como Usar
 
 1.  Certifique-se de ter o **Python 3.10** (ou superior) instalado.
+
 2.  Clone este repositório:
     ```bash
-    git clone https://github.com/filipevbr/hardware-inventory-manager-python.git
+    git clone https://github.com/filipevbr/hardware-inventory-manager.git
     ```
+
 3.  Navegue até o diretório do projeto:
     ```bash
-    cd hardware-inventory-manager-python
+    cd hardware-inventory-manager
     ```
-4.  Execute o script principal:
+
+4.  **Instale as dependências visuais:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5.  **Execute o sistema:**
     ```bash
     python src/main.py
     ```
-5.  **Para gerar relatórios:** Selecione a opção `6` no menu. O arquivo `relatorio_estoque.csv` será criado na raiz do projeto.
-
 ---
 
 ## 🛠️ Tecnologias Utilizadas
@@ -53,6 +58,7 @@ O projeto conta com o ciclo completo de CRUD (Create, Read, Update, Delete), sis
 * **Biblioteca `json`** (Persistência de dados)
 * **Biblioteca `csv`** (Geração de relatórios)
 * **Biblioteca `datetime`** (Registro temporal)
+* **Interface** `tabulate`, `colorama`
 
 ---
 
@@ -65,4 +71,4 @@ O projeto conta com o ciclo completo de CRUD (Create, Read, Update, Delete), sis
 
 ## 🤖 Declaração de Uso de IA
 
-> Durante a preparação deste projeto e documentação, o autor utilizou o Gemini (Google) como ferramenta de apoio para auxiliar na estruturação do código, revisão de lógica e formatação de texto. O autor revisou, testou e editou todo o conteúdo, assumindo total responsabilidade pelo código final.
+> Durante o desenvolvimento, o Gemini (Google) foi utilizado como "peer review" para revisão de lógica e brainstorming de arquitetura. Todo o código foi validado, testado e refinado pelo autor.
